@@ -9,7 +9,7 @@ const App = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
 
-  const apiCall = async () => {
+  const apiCall = () => {
     setLoading(true);
     let easy =
       "https://opentdb.com/api.php?amount=5&difficulty=easy&type=multiple";
@@ -17,7 +17,7 @@ const App = () => {
       "https://opentdb.com/api.php?amount=5&difficulty=medium&type=multiple";
     let hard =
       "https://opentdb.com/api.php?amount=5&difficulty=hard&type=multiple";
-    const data2 = await axios
+    axios
       .all([axios.get(easy), axios.get(medium), axios.get(hard)])
       .then(
         axios.spread((...reponse: AxiosResponse[]) => {
