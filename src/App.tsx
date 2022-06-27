@@ -52,16 +52,19 @@ const App = () => {
   return (
     <>
       <div>
-        {loading && <h1>loading</h1>}
+        {loading && <h1>Game Starting</h1>}
+
         {gameStarted && !loading && <QuestionsScreen data={data} />}
-        <button
-          onClick={() => {
-            apiCall();
-            setGameStarted(true);
-          }}
-        >
-          Start Game
-        </button>
+        {!gameStarted && (
+          <button
+            onClick={() => {
+              setGameStarted(true);
+              apiCall();
+            }}
+          >
+            Start Game
+          </button>
+        )}
       </div>
     </>
   );
