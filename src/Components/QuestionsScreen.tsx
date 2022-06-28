@@ -4,10 +4,27 @@ import { FullQuestions } from "../Types/QuizTypes";
 type IProps = {
   data: FullQuestions[];
 };
+
+type ButtonsState = {
+  default: string;
+  clicked: string;
+  answer: string;
+};
 const QuestionsScreen: FC<IProps> = ({ data }) => {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>();
-  const [buttonColorState, setButtonColorState] = useState<string>("white");
+  const [endOfRound, setEndOfRound] = useState<boolean>(false);
+  const [gameOver, setGameOver] = useState<boolean>(false);
+
+  const handleColor = (answer: string) => {
+    if (data[currentQuestion].correct_answer === answer && endOfRound) {
+      return "green";
+    } else if (answer !== selectedAnswer) {
+      return "white";
+    } else {
+      return "orange";
+    }
+  };
   return (
     <div>
       <h1
@@ -16,14 +33,13 @@ const QuestionsScreen: FC<IProps> = ({ data }) => {
       {data[currentQuestion].all_answers.map((answer) => {
         return (
           <button
+            className="answer-button"
             dangerouslySetInnerHTML={{ __html: answer }}
             style={{
-              backgroundColor:
-                selectedAnswer === answer ? buttonColorState : "white",
+              backgroundColor: handleColor(answer),
             }}
             onClick={() => {
               setSelectedAnswer(answer);
-              setButtonColorState("orange");
             }}
           />
         );
@@ -31,18 +47,23 @@ const QuestionsScreen: FC<IProps> = ({ data }) => {
       {selectedAnswer && (
         <button
           onClick={() => {
+            setEndOfRound(true);
             if (selectedAnswer === data[currentQuestion].correct_answer) {
-              setButtonColorState("green");
               setTimeout(() => {
+                setEndOfRound(false);
                 setCurrentQuestion(currentQuestion + 1);
                 setSelectedAnswer(null);
               }, 2000);
+            } else {
+              setGameOver(true);
             }
           }}
         >
           Final Answer
         </button>
       )}
+
+      {gameOver && <h1>GAME OVER</h1>}
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { Question, FullQuestions } from "./Types/QuizTypes";
 import { shuffleArray } from "./Utils/Utils";
 import axios, { AxiosResponse } from "axios";
 import QuestionsScreen from "./Components/QuestionsScreen";
-
+import "./App.css";
 const App = () => {
   const [data, setData] = useState<FullQuestions[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
