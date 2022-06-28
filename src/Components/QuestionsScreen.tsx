@@ -5,11 +5,6 @@ type IProps = {
   data: FullQuestions[];
 };
 
-type ButtonsState = {
-  default: string;
-  clicked: string;
-  answer: string;
-};
 const QuestionsScreen: FC<IProps> = ({ data }) => {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>();
