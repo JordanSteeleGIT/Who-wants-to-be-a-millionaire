@@ -1,0 +1,65 @@
+@keyframes incorrect-winking {
+  12.5% {
+    background-color: green;
+  }
+  25% {
+    background-color: white;
+  }
+  37.5% {
+    background-color: green;
+  }
+  50% {
+    background-color: white;
+  }
+  62.5% {
+    background-color: green;
+  }
+  75% {
+    background-color: white;
+  }
+  87.5% {
+    background-color: green;
+  }
+  100% {
+    background-color: white;
+  }
+}
+
+@keyframes correct-winking {
+  12.5% {
+    background-color: orange;
+  }
+  25% {
+    background-color: green;
+  }
+  37.5% {
+    background-color: orange;
+  }
+  50% {
+    background-color: green;
+  }
+  62.5% {
+    background-color: orange;
+  }
+  75% {
+    background-color: green;
+  }
+  87.5% {
+    background-color: orange;
+  }
+  100% {
+    background-color: green;
+  }
+}
+
+.incorrent-animate {
+  animation: incorrect-winking;
+  animation-duration: 2s;
+  background-color: green;
+}
+
+.corrent-animate {
+  animation: correct-winking;
+  animation-duration: 2s;
+  background-color: green;
+}

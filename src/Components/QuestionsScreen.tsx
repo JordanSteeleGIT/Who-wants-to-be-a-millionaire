@@ -20,6 +20,18 @@ const QuestionsScreen: FC<IProps> = ({ data }) => {
       return "orange";
     }
   };
+
+  const handleAnimation = (answer: string) => {
+    if (data[currentQuestion].correct_answer === answer) {
+      if (data[currentQuestion].correct_answer === selectedAnswer) {
+        return "corrent-animate";
+      }
+      if (data[currentQuestion].correct_answer !== selectedAnswer) {
+        return "incorrent-animate";
+      }
+    }
+  };
+
   return (
     <div>
       <h1
@@ -28,7 +40,7 @@ const QuestionsScreen: FC<IProps> = ({ data }) => {
       {data[currentQuestion].all_answers.map((answer) => {
         return (
           <button
-            className="answer-button"
+            className={endOfRound ? handleAnimation(answer) : ""}
             dangerouslySetInnerHTML={{ __html: answer }}
             style={{
               backgroundColor: handleColor(answer),
@@ -48,7 +60,7 @@ const QuestionsScreen: FC<IProps> = ({ data }) => {
                 setEndOfRound(false);
                 setCurrentQuestion(currentQuestion + 1);
                 setSelectedAnswer(null);
-              }, 2000);
+              }, 5000);
             } else {
               setGameOver(true);
             }
