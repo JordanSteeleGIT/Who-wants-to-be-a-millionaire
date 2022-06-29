@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Question, FullQuestions } from "./Types/QuizTypes";
 import { shuffleArray } from "./Utils/Utils";
 import axios, { AxiosResponse } from "axios";
-import QuestionsScreen from "./Components/QuestionsScreen";
+
+import GameInterface from "./Components/GameInterface";
 import "./App.css";
 const App = () => {
   const [data, setData] = useState<FullQuestions[]>([]);
@@ -51,21 +52,18 @@ const App = () => {
 
   return (
     <>
-      <div>
-        {loading && <h1>Game Starting</h1>}
-
-        {gameStarted && !loading && <QuestionsScreen data={data} />}
-        {!gameStarted && (
-          <button
-            onClick={() => {
-              setGameStarted(true);
-              apiCall();
-            }}
-          >
-            Start Game
-          </button>
-        )}
-      </div>
+      {loading && <h1>Game Starting</h1>}
+      {gameStarted && !loading && <GameInterface data={data} />}
+      {!gameStarted && (
+        <button
+          onClick={() => {
+            setGameStarted(true);
+            apiCall();
+          }}
+        >
+          Start Game
+        </button>
+      )}
     </>
   );
 };
