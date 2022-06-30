@@ -2,17 +2,22 @@ import React, { FC, useState } from "react";
 import { FullQuestions } from "../Types/QuizTypes";
 import { questionNumber } from "../Utils/Utils";
 
-type IProps = {
+type QuestionsPanelProps = {
   data: FullQuestions[];
+  currentQuestion: number;
+  setCurrentQuestion: React.Dispatch<React.SetStateAction<number>>;
 };
 
-const QuestionsPanel: FC<IProps> = ({ data }) => {
-  const [currentQuestion, setCurrentQuestion] = useState<number>(0);
+const QuestionsPanel: FC<QuestionsPanelProps> = ({
+  data,
+  currentQuestion,
+  setCurrentQuestion,
+}) => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>();
   const [endOfRound, setEndOfRound] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
 
-  const handleBackgroundColor = (answer: string) => {
+  const handleBackgroundColor = (answer: string): string => {
     if (data[currentQuestion].correct_answer === answer && endOfRound) {
       return "green";
     } else if (answer !== selectedAnswer) {
@@ -22,7 +27,7 @@ const QuestionsPanel: FC<IProps> = ({ data }) => {
     }
   };
 
-  const handleFontColor = (answer: string) => {
+  const handleFontColor = (answer: string): string => {
     if (data[currentQuestion].correct_answer === answer && endOfRound) {
       return "black";
     } else if (answer !== selectedAnswer) {
@@ -32,7 +37,7 @@ const QuestionsPanel: FC<IProps> = ({ data }) => {
     }
   };
 
-  const handleAnimation = (answer: string) => {
+  const handleAnimation = (answer: string): string | undefined => {
     if (data[currentQuestion].correct_answer === answer) {
       if (data[currentQuestion].correct_answer === selectedAnswer) {
         return "corrent-animate";
@@ -59,7 +64,9 @@ const QuestionsPanel: FC<IProps> = ({ data }) => {
                 endOfRound ? handleAnimation(answer) : ""
               } `}
               dangerouslySetInnerHTML={{
-                __html: `<span>${questionNumber(index)}</span>&nbsp${answer}`,
+                __html: `<span style="color:${handleFontColor(
+                  answer
+                )}">${questionNumber(index)}</span>&nbsp${answer}`,
               }}
               style={{
                 backgroundColor: handleBackgroundColor(answer),
@@ -81,7 +88,7 @@ const QuestionsPanel: FC<IProps> = ({ data }) => {
                   setEndOfRound(false);
                   setCurrentQuestion(currentQuestion + 1);
                   setSelectedAnswer(null);
-                }, 5000);
+                }, 3400);
               } else {
                 setGameOver(true);
               }
@@ -91,8 +98,7 @@ const QuestionsPanel: FC<IProps> = ({ data }) => {
           </button>
         )}
       </div>
-
-      {gameOver && <h1>GAME OVER</h1>}
+      {/* {gameOver && <h1>GAME OVER</h1>} */}
     </div>
   );
 };

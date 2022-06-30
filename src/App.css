@@ -36,11 +36,12 @@ section {
   flex-wrap: wrap;
   width: 100%;
   align-content: flex-end;
+  justify-content: space-between;
 }
 
 .half {
   background-color: purple;
-  flex-basis: 50%;
+  flex-basis: 49%;
   height: 60%;
   margin-bottom: 20px;
 }
@@ -103,6 +104,36 @@ section {
   color: black;
   font-size: 15px;
   font-weight: 600;
+}
+
+.scoreboard {
+  display: flex;
+  flex-direction: column-reverse;
+  background-color: #02337c;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.scoreboard > div {
+  display: flex;
+  align-items: center;
+}
+.scoreboard > div h1:first-child {
+  width: 25px;
+  text-align: right;
+}
+
+.scoreboard > div h1 {
+  font-weight: 400;
+  font-size: 19px;
+}
+
+.scoreboard > div span {
+  color: white;
+  width: 20px;
+  left: 25px;
+
+  text-align: center;
 }
 
 @keyframes incorrect-winking {
