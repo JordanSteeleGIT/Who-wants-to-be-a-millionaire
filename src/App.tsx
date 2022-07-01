@@ -53,7 +53,9 @@ const App = () => {
   return (
     <>
       {loading && <h1>Game Starting</h1>}
-      {gameStarted && !loading && <GameInterface data={data} />}
+      {gameStarted && !loading && (
+        <GameInterface data={data} setData={setData} />
+      )}
       {!gameStarted && (
         <button
           onClick={() => {

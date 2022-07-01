@@ -44,6 +44,12 @@ section {
   flex-basis: 49%;
   height: 60%;
   margin-bottom: 20px;
+  background-color: #02337c;
+  padding: 20px;
+}
+
+.half img {
+  max-width: 100%;
 }
 .full {
   flex-basis: 100%;
@@ -109,9 +115,7 @@ section {
 .scoreboard {
   display: flex;
   flex-direction: column-reverse;
-  background-color: #02337c;
   justify-content: space-between;
-  padding: 20px;
 }
 
 .scoreboard > div {
@@ -132,8 +136,14 @@ section {
   color: white;
   width: 20px;
   left: 25px;
-
   text-align: center;
+}
+
+.info-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  justify-content: space-between;
 }
 
 @keyframes incorrect-winking {

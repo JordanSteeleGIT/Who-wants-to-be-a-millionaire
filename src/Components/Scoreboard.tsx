@@ -31,7 +31,6 @@ const Scoreboard: FC<ScoreboardProps> = ({ currentQuestion }) => {
               backgroundColor:
                 currentQuestion === index ? "orange" : "transparent",
               color: currentQuestion === index ? "black" : "orange",
-              marginBottom: "10px",
             }}
           >
             <h1>{index + 1}</h1>
