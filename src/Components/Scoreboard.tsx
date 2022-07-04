@@ -27,6 +27,7 @@ const Scoreboard: FC<ScoreboardProps> = ({ currentQuestion }) => {
       {scoreboard.map((prize, index) => {
         return (
           <div
+            key={index}
             style={{
               backgroundColor:
                 currentQuestion === index ? "orange" : "transparent",

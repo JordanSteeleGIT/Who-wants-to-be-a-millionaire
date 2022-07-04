@@ -59,6 +59,7 @@ const QuestionsPanel: FC<QuestionsPanelProps> = ({
         {data[currentQuestion].all_answers.map((answer, index) => {
           return (
             <button
+              key={index}
               disabled={endOfRound}
               className={`answer-box ${
                 endOfRound ? handleAnimation(answer) : ""

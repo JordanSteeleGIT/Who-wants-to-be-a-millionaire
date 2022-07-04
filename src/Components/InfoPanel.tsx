@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 
 import { FullQuestions } from "../Types/QuizTypes";
 import { shuffleArray } from "../Utils/Utils";
@@ -6,13 +6,14 @@ import { shuffleArray } from "../Utils/Utils";
 type InfoPanelProps = {
   setData: React.Dispatch<React.SetStateAction<FullQuestions[]>>;
   currentQuestion: number;
+  data: FullQuestions[];
 };
 
-const InfoPanel: FC<InfoPanelProps> = ({ setData, currentQuestion }) => {
+const InfoPanel: FC<InfoPanelProps> = ({ setData, currentQuestion, data }) => {
   function removeTwoAnswers(fullArray: any, correctAnswer: any) {
     let index = fullArray.indexOf(correctAnswer);
     let numbers = generateRandom(index);
-    console.log(numbers);
+    console.info(numbers);
     for (let i = 0; i < 2; i++) {
       fullArray[numbers[i]] = " ";
     }
@@ -20,38 +21,33 @@ const InfoPanel: FC<InfoPanelProps> = ({ setData, currentQuestion }) => {
   }
 
   function generateRandom(excluded: number) {
-    let arr: number[] = [0, 1, 2, 3];
-    let excludedArr = arr.filter(function (item) {
-      return item !== excluded;
-    });
-    let shuffledArray = shuffleArray(excludedArr);
-    shuffledArray.splice(Math.floor(Math.random() * 3), 1);
-    return shuffledArray;
+    var arr = [];
+    while (arr.length < 2) {
+      var r = Math.floor(Math.random() * 4);
+      if (arr.indexOf(r) === -1 && r !== excluded) arr.push(r);
+    }
+    return arr;
   }
+
+  const handleFiftyFifty = () => {
+    const newState = data.map((obj, index) => {
+      if (index === currentQuestion) {
+        return {
+          ...obj,
+          all_answers: removeTwoAnswers(obj.all_answers, obj.correct_answer),
+        };
+      }
+      return obj;
+    });
+
+    setData(newState);
+  };
 
   return (
     <div className="half info-panel">
       <img src="./images/whowants.png" />
       <div>
-        <button
-          onClick={() =>
-            setData((prev) =>
-              prev.map((x, index) => {
-                if (index === currentQuestion)
-                  return {
-                    ...x,
-                    all_answers: removeTwoAnswers(
-                      x.all_answers,
-                      x.correct_answer
-                    ),
-                  };
-                return x;
-              })
-            )
-          }
-        >
-          50/50
-        </button>
+        <button onClick={handleFiftyFifty}>50/50</button>
         <button>ask audience</button>
       </div>
     </div>

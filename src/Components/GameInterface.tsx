@@ -15,7 +15,11 @@ const GameInterface: FC<IProps> = ({ data, setData }) => {
     <section>
       <div className="game-container">
         <div className="game-wrapper">
-          <InfoPanel setData={setData} currentQuestion={currentQuestion} />
+          <InfoPanel
+            setData={setData}
+            data={data}
+            currentQuestion={currentQuestion}
+          />
           <Scoreboard currentQuestion={currentQuestion} />
           <QuestionsPanel
             data={data}
