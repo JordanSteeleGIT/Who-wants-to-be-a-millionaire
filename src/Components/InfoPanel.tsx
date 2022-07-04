@@ -16,7 +16,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
   data,
   handleDisabledButtons,
 }) => {
-  function removeTwoAnswers(fullArray: any, correctAnswer: any) {
+  const removeTwoAnswers = (fullArray: string[], correctAnswer: string) => {
     let index = fullArray.indexOf(correctAnswer);
     let numbers = generateRandom(index);
     handleDisabledButtons(numbers);
@@ -25,16 +25,16 @@ const InfoPanel: FC<InfoPanelProps> = ({
       fullArray[numbers[i]] = " ";
     }
     return fullArray;
-  }
+  };
 
-  function generateRandom(excluded: number) {
+  const generateRandom = (excluded: number) => {
     var arr = [];
     while (arr.length < 2) {
       var r = Math.floor(Math.random() * 4);
       if (arr.indexOf(r) === -1 && r !== excluded) arr.push(r);
     }
     return arr;
-  }
+  };
 
   const handleFiftyFifty = () => {
     const newState = data.map((obj, index) => {
