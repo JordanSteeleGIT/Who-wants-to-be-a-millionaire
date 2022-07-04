@@ -17,6 +17,10 @@ const GameInterface: FC<IProps> = ({ data, setData }) => {
     setDisabledAnswers(array);
   };
 
+  useEffect(() => {
+    setDisabledAnswers([]);
+  }, [currentQuestion]);
+
   return (
     <section>
       <div className="game-container">
