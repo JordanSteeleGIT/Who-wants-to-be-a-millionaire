@@ -6,12 +6,14 @@ type QuestionsPanelProps = {
   data: FullQuestions[];
   currentQuestion: number;
   setCurrentQuestion: React.Dispatch<React.SetStateAction<number>>;
+  disabledAnswers: number[];
 };
 
 const QuestionsPanel: FC<QuestionsPanelProps> = ({
   data,
   currentQuestion,
   setCurrentQuestion,
+  disabledAnswers,
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>();
   const [endOfRound, setEndOfRound] = useState<boolean>(false);
@@ -21,7 +23,7 @@ const QuestionsPanel: FC<QuestionsPanelProps> = ({
     if (data[currentQuestion].correct_answer === answer && endOfRound) {
       return "green";
     } else if (answer !== selectedAnswer) {
-      return "#02337c";
+      return "radial-gradient(circle,rgba(7,46,120,1) 0%, rgba(10,21,74,1) 100%";
     } else {
       return "orange";
     }
@@ -60,7 +62,7 @@ const QuestionsPanel: FC<QuestionsPanelProps> = ({
           return (
             <button
               key={index}
-              disabled={endOfRound}
+              disabled={endOfRound || disabledAnswers.includes(index)}
               className={`answer-box ${
                 endOfRound ? handleAnimation(answer) : ""
               } `}
@@ -70,7 +72,7 @@ const QuestionsPanel: FC<QuestionsPanelProps> = ({
                 )}">${questionNumber(index)}</span>&nbsp${answer}`,
               }}
               style={{
-                backgroundColor: handleBackgroundColor(answer),
+                background: handleBackgroundColor(answer),
                 color: handleFontColor(answer),
               }}
               onClick={() => {

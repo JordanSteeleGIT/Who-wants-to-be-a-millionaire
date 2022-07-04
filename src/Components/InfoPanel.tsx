@@ -7,13 +7,20 @@ type InfoPanelProps = {
   setData: React.Dispatch<React.SetStateAction<FullQuestions[]>>;
   currentQuestion: number;
   data: FullQuestions[];
+  handleDisabledButtons: (array: number[]) => void;
 };
 
-const InfoPanel: FC<InfoPanelProps> = ({ setData, currentQuestion, data }) => {
+const InfoPanel: FC<InfoPanelProps> = ({
+  setData,
+  currentQuestion,
+  data,
+  handleDisabledButtons,
+}) => {
   function removeTwoAnswers(fullArray: any, correctAnswer: any) {
     let index = fullArray.indexOf(correctAnswer);
     let numbers = generateRandom(index);
-    console.info(numbers);
+    handleDisabledButtons(numbers);
+
     for (let i = 0; i < 2; i++) {
       fullArray[numbers[i]] = " ";
     }
@@ -49,6 +56,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ setData, currentQuestion, data }) => {
       <div>
         <button onClick={handleFiftyFifty}>50/50</button>
         <button>ask audience</button>
+        <button>ask host</button>
       </div>
     </div>
   );
