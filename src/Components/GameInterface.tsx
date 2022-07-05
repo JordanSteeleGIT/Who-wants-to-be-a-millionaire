@@ -4,16 +4,16 @@ import InfoPanel from "./InfoPanel";
 import QuestionsPanel from "./QuestionsPanel";
 import Scoreboard from "./Scoreboard";
 
-type IProps = {
+type InterfaceProps = {
   data: FullQuestions[];
   setData: React.Dispatch<React.SetStateAction<FullQuestions[]>>;
 };
 
-const GameInterface: FC<IProps> = ({ data, setData }) => {
+const GameInterface: FC<InterfaceProps> = ({ data, setData }) => {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [disabledAnswers, setDisabledAnswers] = useState<number[]>([]);
 
-  const handleDisabledButtons = (array: number[]) => {
+  const handleDisabledButtons = (array: number[]): void => {
     setDisabledAnswers(array);
   };
 
