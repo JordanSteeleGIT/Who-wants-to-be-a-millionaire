@@ -1,7 +1,7 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 import { FullQuestions } from "../Types/QuizTypes";
-import { shuffleArray } from "../Utils/Utils";
+import { shuffleArray, randombetween } from "../Utils/Utils";
 
 type InfoPanelProps = {
   setData: React.Dispatch<React.SetStateAction<FullQuestions[]>>;
@@ -18,6 +18,15 @@ const InfoPanel: FC<InfoPanelProps> = ({
 }) => {
   const [hasFiftyfiftyLifeline, setHasFiftyfiftyLifeline] =
     useState<boolean>(true);
+  const [hasAskAudience, setHasAskAudience] = useState<boolean>(true);
+  const [askAudienceData, setAskAudienceData] = useState<any>({});
+
+  useEffect(() => {
+    if (Object.keys(askAudienceData).length !== 0) {
+      setHasAskAudience(false);
+      setAskAudienceData({});
+    }
+  }, [currentQuestion]);
 
   const removeTwoAnswers = (
     fullArray: string[],
@@ -55,26 +64,60 @@ const InfoPanel: FC<InfoPanelProps> = ({
     setData(newState);
   };
 
-  const handleAskAudience = () => {
+  const handleAskAudienceDifficulty = () => {
+    //Switch statement for each question difficulty
+    let randomNumber = randombetween(0, 1);
     switch (data[currentQuestion].difficulty) {
       case "easy":
-        return handleEasyAskAudience(
-          data[currentQuestion].all_answers,
-          data[currentQuestion].correct_answer
-        );
-
+        return handleAskAudience(randomNumber, 0.95);
+      case "medium":
+        return handleAskAudience(randomNumber, 0.85);
+      case "hard":
+        return handleAskAudience(randomNumber, 0.7);
       default:
-        return handleEasyAskAudience(
-          data[currentQuestion].all_answers,
-          data[currentQuestion].correct_answer
-        );
+        return handleAskAudience(randomNumber, 0.85);
     }
+  };
+
+  const generateWrongAnswersProb = (max: number, thecount: number) => {
+    //Function takes the remaining probability chance and and picks a number within a range for each individual answer
+    var r = [];
+    let newMax = max;
+    let stopMaxRoll = newMax * 0.15;
+    for (let i = 0; i < thecount; i++) {
+      if (i === thecount - 1) {
+        r.push(parseFloat(newMax.toFixed(2)));
+      } else {
+        let randomNumber = randombetween(stopMaxRoll, newMax - stopMaxRoll);
+        r.push(randomNumber);
+        newMax = newMax - randomNumber;
+      }
+    }
+    return shuffleArray(r);
+  };
+
+  const generateAllAnswersProb = (correctAnswerProbability: number) => {
+    //Function returns an array with each answers weights to be chosen by the audience
+    let wrongAnswersProbArr = generateWrongAnswersProb(
+      1 - correctAnswerProbability,
+      3
+    );
+    let indexOfCorrectAnswer = data[currentQuestion].all_answers.indexOf(
+      data[currentQuestion].correct_answer
+    );
+    wrongAnswersProbArr.splice(
+      indexOfCorrectAnswer,
+      0,
+      correctAnswerProbability
+    );
+    return wrongAnswersProbArr;
   };
 
   const biasedRandomSelection = (
     values: string[],
     probabilities: number[]
   ): string | undefined => {
+    //Functions the probablities to pick and answer
     var rand = Math.random();
     var cumulativeProb = 0;
     for (var i = 0; i < probabilities.length; i++) {
@@ -82,8 +125,8 @@ const InfoPanel: FC<InfoPanelProps> = ({
       if (rand < cumulativeProb) return values[i];
     }
   };
-
   const calculateAudienceAnswers = (allAnswersArray: any, bias: number[]) => {
+    //Sums return value from biasRandomSelection
     let newArr = ["a", "b", "c", "d"];
     let audienceAnswers: any = {
       a: 0,
@@ -91,52 +134,76 @@ const InfoPanel: FC<InfoPanelProps> = ({
       c: 0,
       d: 0,
     };
-
     for (let i = 0; i < 30; i++) {
-      let answer = biasedRandomSelection(allAnswersArray, bias);
-      let indexOfAnswer = allAnswersArray?.indexOf(answer);
-
+      let answer = biasedRandomSelection(allAnswersArray, bias); // The result will an answer as a string
+      let indexOfAnswer = allAnswersArray.indexOf(answer); // Find the index of the chosen answer
       audienceAnswers[newArr[indexOfAnswer]] =
         audienceAnswers[newArr[indexOfAnswer]] + 1;
     }
     return audienceAnswers;
   };
 
-  const generateProb = (allAnswersArray: string[], correctAnswer: string) => {
-    let probabilitiesArr = [];
-    let indexOfCorrectAnswer = allAnswersArray.indexOf(correctAnswer);
-    for (let i = 0; i < 4; i++) {
-      if (i === indexOfCorrectAnswer) {
-        probabilitiesArr.push(0.7);
-      } else {
-        probabilitiesArr.push(0.1);
-      }
+  const handleAskAudience = (randomNumber: number, threshold: number) => {
+    setHasAskAudience(false);
+    //Function indentifies if audience is going to be correct and what to do with the result
+    if (randomNumber < threshold) {
+      //audience is correct
+      let correctAnswerProbability = randombetween(0.51, 0.9);
+      let audienceProbability = generateAllAnswersProb(
+        correctAnswerProbability
+      );
+      setAskAudienceData(
+        calculateAudienceAnswers(
+          data[currentQuestion].all_answers,
+          audienceProbability
+        )
+      );
+    } else {
+      //audience is wrong
+      let correctAnswerProbability = randombetween(0.1, 0.4);
+      let audienceProbability = generateAllAnswersProb(
+        correctAnswerProbability
+      );
+      setAskAudienceData(
+        calculateAudienceAnswers(
+          data[currentQuestion].all_answers,
+          audienceProbability
+        )
+      );
     }
-    return probabilitiesArr;
-  };
-
-  const handleEasyAskAudience = (
-    allAnswersArray: string[],
-    correctAnswer: string
-  ) => {
-    let probability = generateProb(allAnswersArray, correctAnswer);
-    let audienceAnswersObj = calculateAudienceAnswers(
-      allAnswersArray,
-      probability
-    );
-    return audienceAnswersObj;
   };
 
   return (
     <div className="half info-panel">
       <img src="./images/whowants.png" />
+      {Object.keys(askAudienceData).length !== 0 ? (
+        <div className="audience-container">
+          {Object.keys(askAudienceData).map((keyName) => {
+            return (
+              <div
+                style={{
+                  height: askAudienceData[keyName] * 3,
+                }}
+              >
+                <h4 className="audience-number">{askAudienceData[keyName]}</h4>
+                <h4 className="audience-letter">{keyName}</h4>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
       <div>
         <button
           onClick={() => (hasFiftyfiftyLifeline ? handleFiftyFifty() : null)}
         >
           50/50
         </button>
-        <button onClick={() => console.log(handleAskAudience())}>
+        <button
+          onClick={() =>
+            hasAskAudience ? handleAskAudienceDifficulty() : null
+          }
+        >
           ask audience
         </button>
         <button>ask host</button>

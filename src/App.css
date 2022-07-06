@@ -52,7 +52,8 @@ section {
 }
 
 .half img {
-  max-width: 100%;
+  max-width: 70%;
+  margin-inline: auto;
 }
 .full {
   flex-basis: 100%;
@@ -174,6 +175,34 @@ section {
   color: white;
   font-size: 12px;
   font-weight: 600;
+}
+
+.audience-container {
+  background-color: rgba(10, 21, 74, 1);
+  height: 120px;
+  display: flex;
+  align-items: flex-end;
+  padding-top: 50px;
+}
+
+.audience-container > div {
+  width: 50px;
+  background: red;
+  position: relative;
+}
+
+.audience-container > div h4 {
+  width: 100%;
+  position: absolute;
+
+  text-align: center;
+}
+
+.audience-container > div .audience-letter {
+  bottom: -20px;
+}
+.audience-container > div .audience-number {
+  top: -20px;
 }
 
 @keyframes incorrect-winking {
