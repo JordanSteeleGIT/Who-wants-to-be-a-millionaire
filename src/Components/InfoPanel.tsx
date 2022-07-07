@@ -28,10 +28,10 @@ const InfoPanel: FC<InfoPanelProps> = ({
   const [displayAudienceGraph, setDisplayAudienceGraph] =
     useState<boolean>(false);
   const [askAudienceData, setAskAudienceData] = useState<AskAudienceType>({
-    a: 0,
-    b: 0,
-    c: 0,
-    d: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
   });
 
   useEffect(() => {
@@ -137,12 +137,12 @@ const InfoPanel: FC<InfoPanelProps> = ({
   };
   const calculateAudienceAnswers = (allAnswersArray: any, bias: number[]) => {
     //Sums return value from biasRandomSelection
-    let newArr = ["a", "b", "c", "d"];
+    let newArr = ["A", "B", "C", "D"];
     let audienceAnswers: AskAudienceType = {
-      a: 0,
-      b: 0,
-      c: 0,
-      d: 0,
+      A: 0,
+      B: 0,
+      C: 0,
+      D: 0,
     };
     for (let i = 0; i < 30; i++) {
       let answer = biasedRandomSelection(allAnswersArray, bias); // The result will an answer as a string
@@ -183,6 +183,14 @@ const InfoPanel: FC<InfoPanelProps> = ({
     }
   };
 
+  const handleButtonEvent = (lifeLineState: boolean) => {
+    if (!lifeLineState) {
+      return "cross";
+    } else {
+      return undefined;
+    }
+  };
+
   return (
     <div className="half info-panel">
       <img src="./images/whowants.png" />
@@ -205,11 +213,13 @@ const InfoPanel: FC<InfoPanelProps> = ({
 
       <div>
         <button
+          className={handleButtonEvent(hasFiftyfiftyLifeline)}
           onClick={() => (hasFiftyfiftyLifeline ? handleFiftyFifty() : null)}
         >
           50/50
         </button>
         <button
+          className={handleButtonEvent(hasAskAudienceLifeline)}
           onClick={() => {
             if (hasAskAudienceLifeline) {
               handleAskAudienceDifficulty();
@@ -219,7 +229,15 @@ const InfoPanel: FC<InfoPanelProps> = ({
         >
           ask audience
         </button>
-        <button>ask host</button>
+        <button
+          style={{
+            background: true
+              ? "radial-gradient(circle,rgba(7,46,120,1) 0%, rgba(10,21,74,1) 100%"
+              : "red",
+          }}
+        >
+          ask host
+        </button>
       </div>
     </div>
   );

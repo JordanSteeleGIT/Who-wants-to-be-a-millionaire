@@ -175,6 +175,34 @@ section {
   color: white;
   font-size: 12px;
   font-weight: 600;
+  position: relative;
+}
+.cross:before {
+  content: "";
+  width: 8px;
+  height: 105%;
+  background-color: red;
+  position: absolute;
+  transform: rotate(55deg);
+  left: 0;
+  right: 0;
+  top: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cross:after {
+  content: "";
+  width: 8px;
+  height: 105%;
+  background-color: red;
+  position: absolute;
+  transform: rotate(125deg);
+  left: 0;
+  right: 0;
+  top: 0;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .audience-container {
@@ -200,7 +228,7 @@ section {
 }
 
 .audience-container > div .audience-letter {
-  bottom: -20px;
+  bottom: -25px;
 }
 .audience-container > div .audience-number {
   top: -30px;
