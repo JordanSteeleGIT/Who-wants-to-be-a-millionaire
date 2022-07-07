@@ -10,6 +10,10 @@ type InfoPanelProps = {
   handleDisabledButtons: (array: number[]) => void;
 };
 
+type AskAudienceType = {
+  [key: string]: number;
+};
+
 const InfoPanel: FC<InfoPanelProps> = ({
   setData,
   currentQuestion,
@@ -18,14 +22,20 @@ const InfoPanel: FC<InfoPanelProps> = ({
 }) => {
   const [hasFiftyfiftyLifeline, setHasFiftyfiftyLifeline] =
     useState<boolean>(true);
-  const [hasAskAudience, setHasAskAudience] = useState<boolean>(true);
-  const [askAudienceData, setAskAudienceData] = useState<any>({});
+  const [hasAskAudienceLifeline, setHasAskAudienceLifeline] =
+    useState<boolean>(true);
+
+  const [displayAudienceGraph, setDisplayAudienceGraph] =
+    useState<boolean>(false);
+  const [askAudienceData, setAskAudienceData] = useState<AskAudienceType>({
+    a: 0,
+    b: 0,
+    c: 0,
+    d: 0,
+  });
 
   useEffect(() => {
-    if (Object.keys(askAudienceData).length !== 0) {
-      setHasAskAudience(false);
-      setAskAudienceData({});
-    }
+    setDisplayAudienceGraph(false);
   }, [currentQuestion]);
 
   const removeTwoAnswers = (
@@ -128,7 +138,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
   const calculateAudienceAnswers = (allAnswersArray: any, bias: number[]) => {
     //Sums return value from biasRandomSelection
     let newArr = ["a", "b", "c", "d"];
-    let audienceAnswers: any = {
+    let audienceAnswers: AskAudienceType = {
       a: 0,
       b: 0,
       c: 0,
@@ -144,7 +154,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
   };
 
   const handleAskAudience = (randomNumber: number, threshold: number) => {
-    setHasAskAudience(false);
+    setHasAskAudienceLifeline(false);
     //Function indentifies if audience is going to be correct and what to do with the result
     if (randomNumber < threshold) {
       //audience is correct
@@ -176,7 +186,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
   return (
     <div className="half info-panel">
       <img src="./images/whowants.png" />
-      {Object.keys(askAudienceData).length !== 0 ? (
+      {displayAudienceGraph && (
         <div className="audience-container">
           {Object.keys(askAudienceData).map((keyName) => {
             return (
@@ -191,7 +201,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
             );
           })}
         </div>
-      ) : null}
+      )}
 
       <div>
         <button
@@ -200,9 +210,12 @@ const InfoPanel: FC<InfoPanelProps> = ({
           50/50
         </button>
         <button
-          onClick={() =>
-            hasAskAudience ? handleAskAudienceDifficulty() : null
-          }
+          onClick={() => {
+            if (hasAskAudienceLifeline) {
+              handleAskAudienceDifficulty();
+              setDisplayAudienceGraph(true);
+            }
+          }}
         >
           ask audience
         </button>

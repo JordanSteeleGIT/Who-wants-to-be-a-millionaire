@@ -52,7 +52,7 @@ section {
 }
 
 .half img {
-  max-width: 70%;
+  max-width: 80%;
   margin-inline: auto;
 }
 .full {
@@ -194,7 +194,8 @@ section {
 .audience-container > div h4 {
   width: 100%;
   position: absolute;
-
+  color: white;
+  font-weight: 400;
   text-align: center;
 }
 
@@ -202,7 +203,7 @@ section {
   bottom: -20px;
 }
 .audience-container > div .audience-number {
-  top: -20px;
+  top: -30px;
 }
 
 @keyframes incorrect-winking {
