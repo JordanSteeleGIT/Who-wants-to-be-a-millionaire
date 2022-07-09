@@ -24,7 +24,9 @@ const InfoPanel: FC<InfoPanelProps> = ({
     useState<boolean>(true);
   const [hasAskAudienceLifeline, setHasAskAudienceLifeline] =
     useState<boolean>(true);
+  const [hasAskHostLifeline, setHasAskHostLifeline] = useState<boolean>(true);
 
+  const [displayHostAnswer, setDisplayHostAnswer] = useState<boolean>(false);
   const [displayAudienceGraph, setDisplayAudienceGraph] =
     useState<boolean>(false);
   const [askAudienceData, setAskAudienceData] = useState<AskAudienceType>({
@@ -34,8 +36,11 @@ const InfoPanel: FC<InfoPanelProps> = ({
     D: 0,
   });
 
+  const [askHostData, setAskHostData] = useState<string>();
+
   useEffect(() => {
     setDisplayAudienceGraph(false);
+    setDisplayHostAnswer(false);
   }, [currentQuestion]);
 
   const removeTwoAnswers = (
@@ -89,6 +94,52 @@ const InfoPanel: FC<InfoPanelProps> = ({
     }
   };
 
+  const handleAskHostDifficulty = () => {
+    //Switch statement for each question difficulty
+    let randomNumber = randombetween(0, 1);
+    switch (data[currentQuestion].difficulty) {
+      case "easy":
+        return handleAskHost(randomNumber, 0.9);
+      case "medium":
+        return handleAskHost(randomNumber, 0.8);
+      case "hard":
+        return handleAskHost(randomNumber, 0.67);
+      default:
+        return handleAskHost(randomNumber, 0.75);
+    }
+  };
+
+  const randomExcluded = (
+    min: number,
+    max: number,
+    excluded: number
+  ): number => {
+    var n = Math.floor(Math.random() * (max - min) + min);
+    if (n >= excluded) n++;
+    return n;
+  };
+
+  const handleAskHost = (randomNumber: number, threshold: number): void => {
+    //TODO: look into using generateAllAnswersProb with biasedRandomSelection
+    setHasAskHostLifeline(false);
+    let indexOfCorrectAnswer = data[currentQuestion].all_answers.indexOf(
+      data[currentQuestion].correct_answer
+    );
+    if (randomNumber < threshold) {
+      setAskHostData(data[currentQuestion].correct_answer);
+    } else {
+      setAskHostData(
+        data[currentQuestion].all_answers[
+          randomExcluded(0, 3, indexOfCorrectAnswer)
+        ]
+      );
+    }
+  };
+
+  useEffect(() => {
+    console.log(askHostData);
+  }, [askHostData]);
+
   const generateWrongAnswersProb = (max: number, thecount: number) => {
     //Function takes the remaining probability chance and and picks a number within a range for each individual answer
     var r = [];
@@ -135,7 +186,11 @@ const InfoPanel: FC<InfoPanelProps> = ({
       if (rand < cumulativeProb) return values[i];
     }
   };
-  const calculateAudienceAnswers = (allAnswersArray: any, bias: number[]) => {
+  const calculateAudienceAnswers = (
+    allAnswersArray: any,
+    bias: number[],
+    amountOfResponses: number
+  ) => {
     //Sums return value from biasRandomSelection
     let newArr = ["A", "B", "C", "D"];
     let audienceAnswers: AskAudienceType = {
@@ -144,7 +199,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
       C: 0,
       D: 0,
     };
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < amountOfResponses; i++) {
       let answer = biasedRandomSelection(allAnswersArray, bias); // The result will an answer as a string
       let indexOfAnswer = allAnswersArray.indexOf(answer); // Find the index of the chosen answer
       audienceAnswers[newArr[indexOfAnswer]] =
@@ -165,7 +220,8 @@ const InfoPanel: FC<InfoPanelProps> = ({
       setAskAudienceData(
         calculateAudienceAnswers(
           data[currentQuestion].all_answers,
-          audienceProbability
+          audienceProbability,
+          30
         )
       );
     } else {
@@ -177,13 +233,14 @@ const InfoPanel: FC<InfoPanelProps> = ({
       setAskAudienceData(
         calculateAudienceAnswers(
           data[currentQuestion].all_answers,
-          audienceProbability
+          audienceProbability,
+          30
         )
       );
     }
   };
 
-  const handleButtonEvent = (lifeLineState: boolean) => {
+  const handleButtonClass = (lifeLineState: boolean) => {
     if (!lifeLineState) {
       return "cross";
     } else {
@@ -195,7 +252,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
     <div className="half info-panel">
       <img src="./images/whowants.png" />
       {displayAudienceGraph && (
-        <div className="audience-container">
+        <div className="lifeline-container audience-container">
           {Object.keys(askAudienceData).map((keyName) => {
             return (
               <div
@@ -210,30 +267,41 @@ const InfoPanel: FC<InfoPanelProps> = ({
           })}
         </div>
       )}
+      {displayHostAnswer && (
+        <div className="lifeline-container askhost-container">
+          <h1
+            dangerouslySetInnerHTML={{ __html: `I think its ${askHostData}` }}
+          />
+        </div>
+      )}
 
       <div>
         <button
-          className={handleButtonEvent(hasFiftyfiftyLifeline)}
+          className={handleButtonClass(hasFiftyfiftyLifeline)}
           onClick={() => (hasFiftyfiftyLifeline ? handleFiftyFifty() : null)}
         >
           50/50
         </button>
         <button
-          className={handleButtonEvent(hasAskAudienceLifeline)}
+          className={handleButtonClass(hasAskAudienceLifeline)}
           onClick={() => {
             if (hasAskAudienceLifeline) {
               handleAskAudienceDifficulty();
               setDisplayAudienceGraph(true);
+              setDisplayHostAnswer(false);
             }
           }}
         >
           ask audience
         </button>
         <button
-          style={{
-            background: true
-              ? "radial-gradient(circle,rgba(7,46,120,1) 0%, rgba(10,21,74,1) 100%"
-              : "red",
+          className={handleButtonClass(hasAskHostLifeline)}
+          onClick={() => {
+            if (hasAskHostLifeline) {
+              handleAskHostDifficulty();
+              setDisplayHostAnswer(true);
+              setDisplayAudienceGraph(false);
+            }
           }}
         >
           ask host

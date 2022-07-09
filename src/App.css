@@ -205,12 +205,14 @@ section {
   margin-right: auto;
 }
 
-.audience-container {
+.lifeline-container {
   background-color: rgba(10, 21, 74, 1);
   height: 120px;
+}
+
+.audience-container {
   display: flex;
   align-items: flex-end;
-  padding-top: 50px;
 }
 
 .audience-container > div {
