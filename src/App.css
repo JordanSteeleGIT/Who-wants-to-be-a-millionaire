@@ -4,7 +4,8 @@
 }
 
 body,
-#root {
+#root,
+main {
   height: 100vh;
   width: 100%;
 }
@@ -234,6 +235,35 @@ section {
 }
 .audience-container > div .audience-number {
   top: -30px;
+}
+
+.centered-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.centered-wrapper {
+  width: 50%;
+  height: 350px;
+  background: rgb(7, 46, 120);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.centered-wrapper button {
+  width: 150px;
+  height: 50px;
+  margin-top: 20px;
+  color: black;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 @keyframes incorrect-winking {

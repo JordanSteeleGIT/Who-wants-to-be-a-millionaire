@@ -99,11 +99,11 @@ const InfoPanel: FC<InfoPanelProps> = ({
     let randomNumber = randombetween(0, 1);
     switch (data[currentQuestion].difficulty) {
       case "easy":
-        return handleAskHost(randomNumber, 0.9);
+        return handleAskHost(randomNumber, 0.85);
       case "medium":
-        return handleAskHost(randomNumber, 0.8);
+        return handleAskHost(randomNumber, 0.75);
       case "hard":
-        return handleAskHost(randomNumber, 0.67);
+        return handleAskHost(randomNumber, 0.65);
       default:
         return handleAskHost(randomNumber, 0.75);
     }

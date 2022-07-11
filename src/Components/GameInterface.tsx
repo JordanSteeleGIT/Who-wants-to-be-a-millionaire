@@ -7,9 +7,18 @@ import Scoreboard from "./Scoreboard";
 type InterfaceProps = {
   data: FullQuestions[];
   setData: React.Dispatch<React.SetStateAction<FullQuestions[]>>;
+  setIsGameLost: React.Dispatch<React.SetStateAction<boolean>>;
+  isGameLost: boolean;
+  apiCall: () => void;
 };
 
-const GameInterface: FC<InterfaceProps> = ({ data, setData }) => {
+const GameInterface: FC<InterfaceProps> = ({
+  data,
+  setData,
+  setIsGameLost,
+  isGameLost,
+  apiCall,
+}) => {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [disabledAnswers, setDisabledAnswers] = useState<number[]>([]);
 
@@ -17,30 +26,44 @@ const GameInterface: FC<InterfaceProps> = ({ data, setData }) => {
     setDisabledAnswers(array);
   };
 
-  useEffect(() => {
-    setDisabledAnswers([]);
-  }, [currentQuestion]);
-
   return (
-    <section>
-      <div className="game-container">
-        <div className="game-wrapper">
-          <InfoPanel
-            setData={setData}
-            data={data}
-            currentQuestion={currentQuestion}
-            handleDisabledButtons={handleDisabledButtons}
-          />
-          <Scoreboard currentQuestion={currentQuestion} />
-          <QuestionsPanel
-            data={data}
-            currentQuestion={currentQuestion}
-            setCurrentQuestion={setCurrentQuestion}
-            disabledAnswers={disabledAnswers}
-          />
+    <>
+      {!isGameLost ? (
+        <div className="game-container">
+          <div className="game-wrapper">
+            <InfoPanel
+              setData={setData}
+              data={data}
+              currentQuestion={currentQuestion}
+              handleDisabledButtons={handleDisabledButtons}
+            />
+            <Scoreboard currentQuestion={currentQuestion} />
+            <QuestionsPanel
+              data={data}
+              currentQuestion={currentQuestion}
+              setCurrentQuestion={setCurrentQuestion}
+              disabledAnswers={disabledAnswers}
+              setIsGameLost={setIsGameLost}
+              isGameLost={isGameLost}
+            />
+          </div>
         </div>
-      </div>
-    </section>
+      ) : (
+        <div className="centered-container">
+          <div className="centered-wrapper">
+            <h1>You lost, congrats !!!!</h1>
+            <button
+              onClick={() => {
+                setIsGameLost(false);
+                apiCall();
+              }}
+            >
+              Play Again
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

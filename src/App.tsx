@@ -10,8 +10,12 @@ const App = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
 
+  //If the game is lost we need to show a scren with "play again" and reset all state to initialstate
+  const [isGameLost, setIsGameLost] = useState<boolean>(false);
+
   const apiCall = () => {
     setLoading(true);
+    setData([]);
     let easy =
       "https://opentdb.com/api.php?amount=5&difficulty=easy&type=multiple";
     let medium =
@@ -47,26 +51,43 @@ const App = () => {
   };
 
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+    if (isGameLost) {
+      //on game restart, reset all states to initial state
+      setData([]);
+    }
+  }, [isGameLost]);
 
   return (
-    <>
-      {loading && <h1>Game Starting</h1>}
-      {gameStarted && !loading && (
-        <GameInterface data={data} setData={setData} />
+    <section>
+      {gameStarted && !loading ? (
+        <GameInterface
+          data={data}
+          setData={setData}
+          setIsGameLost={setIsGameLost}
+          isGameLost={isGameLost}
+          apiCall={apiCall}
+        />
+      ) : (
+        <div className="centered-container">
+          <div className="centered-wrapper">
+            {loading && <h1>Game Starting</h1>}
+            {!gameStarted && (
+              <>
+                <h1>Play</h1>
+                <button
+                  onClick={() => {
+                    setGameStarted(true);
+                    apiCall();
+                  }}
+                >
+                  Start Game
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       )}
-      {!gameStarted && (
-        <button
-          onClick={() => {
-            setGameStarted(true);
-            apiCall();
-          }}
-        >
-          Start Game
-        </button>
-      )}
-    </>
+    </section>
   );
 };
 

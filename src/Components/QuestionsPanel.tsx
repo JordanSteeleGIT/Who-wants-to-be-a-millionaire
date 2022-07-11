@@ -7,6 +7,8 @@ type QuestionsPanelProps = {
   currentQuestion: number;
   setCurrentQuestion: React.Dispatch<React.SetStateAction<number>>;
   disabledAnswers: number[];
+  setIsGameLost: React.Dispatch<React.SetStateAction<boolean>>;
+  isGameLost: boolean;
 };
 
 const QuestionsPanel: FC<QuestionsPanelProps> = ({
@@ -14,10 +16,11 @@ const QuestionsPanel: FC<QuestionsPanelProps> = ({
   currentQuestion,
   setCurrentQuestion,
   disabledAnswers,
+  setIsGameLost,
+  isGameLost,
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>();
   const [endOfRound, setEndOfRound] = useState<boolean>(false);
-  const [gameOver, setGameOver] = useState<boolean>(false);
 
   const handleBackgroundColor = (answer: string): string => {
     if (data[currentQuestion].correct_answer === answer && endOfRound) {
@@ -93,7 +96,10 @@ const QuestionsPanel: FC<QuestionsPanelProps> = ({
                   setSelectedAnswer(null);
                 }, 3400);
               } else {
-                setGameOver(true);
+                //isGameLost set here
+                setTimeout(() => {
+                  setIsGameLost(true);
+                }, 3400);
               }
             }}
           >
@@ -101,7 +107,6 @@ const QuestionsPanel: FC<QuestionsPanelProps> = ({
           </button>
         )}
       </div>
-      {/* {gameOver && <h1>GAME OVER</h1>} */}
     </div>
   );
 };
