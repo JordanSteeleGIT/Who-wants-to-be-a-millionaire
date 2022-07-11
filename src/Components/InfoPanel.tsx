@@ -136,10 +136,6 @@ const InfoPanel: FC<InfoPanelProps> = ({
     }
   };
 
-  useEffect(() => {
-    console.log(askHostData);
-  }, [askHostData]);
-
   const generateWrongAnswersProb = (max: number, thecount: number) => {
     //Function takes the remaining probability chance and and picks a number within a range for each individual answer
     var r = [];

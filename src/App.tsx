@@ -15,7 +15,7 @@ const App = () => {
 
   const apiCall = () => {
     setLoading(true);
-    setData([]);
+
     let easy =
       "https://opentdb.com/api.php?amount=5&difficulty=easy&type=multiple";
     let medium =
@@ -52,7 +52,6 @@ const App = () => {
 
   useEffect(() => {
     if (isGameLost) {
-      //on game restart, reset all states to initial state
       setData([]);
     }
   }, [isGameLost]);

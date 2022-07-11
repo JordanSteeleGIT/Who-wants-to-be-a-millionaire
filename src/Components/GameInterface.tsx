@@ -25,7 +25,9 @@ const GameInterface: FC<InterfaceProps> = ({
   const handleDisabledButtons = (array: number[]): void => {
     setDisabledAnswers(array);
   };
-
+  useEffect(() => {
+    setDisabledAnswers([]);
+  }, [currentQuestion]);
   return (
     <>
       {!isGameLost ? (
