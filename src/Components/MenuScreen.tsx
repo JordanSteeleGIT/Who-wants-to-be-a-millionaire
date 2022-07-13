@@ -17,9 +17,7 @@ const MenuScreen: FC<MenuScreenProps> = ({
       <div className="centered-wrapper">
         <img src="./images/whowants.png" />
         <h1>{title}</h1>
-        {currentQuestion != null && currentQuestion > 0 && (
-          <h2>{scoreboardData[currentQuestion - 1]}</h2>
-        )}
+        {currentQuestion != null && <h2>{scoreboardData[currentQuestion]}</h2>}
 
         {children}
       </div>

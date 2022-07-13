@@ -35,6 +35,7 @@ const GameInterface: FC<InterfaceProps> = ({
     <>
       {!isGameOver ? (
         <>
+          <h1>{data[currentQuestion].correct_answer}</h1>
           <div className="game-container">
             <div className="game-wrapper">
               <InfoPanel
@@ -57,8 +58,10 @@ const GameInterface: FC<InterfaceProps> = ({
         </>
       ) : (
         <MenuScreen
-          title={currentQuestion < 14 ? "You just lost" : "you won"}
-          currentQuestion={currentQuestion}
+          title={currentQuestion < 14 ? "You just lost" : "You won"}
+          currentQuestion={
+            currentQuestion < 14 ? currentQuestion - 1 : currentQuestion
+          }
         >
           <button
             onClick={() => {
