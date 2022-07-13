@@ -1,30 +1,14 @@
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
+import { scoreboardData } from "../Utils/Utils";
 
 type ScoreboardProps = {
   currentQuestion: number;
 };
 
 const Scoreboard: FC<ScoreboardProps> = ({ currentQuestion }) => {
-  const [scoreboard, setScoreboard] = useState<string[]>([
-    "£100",
-    "£200",
-    "£300",
-    "£500",
-    "£1,000",
-    "£2,000",
-    "£4,000",
-    "£8,000",
-    "£16,000",
-    "£32,000",
-    "£64,000",
-    "£125,000",
-    "£250,000",
-    "£500,000",
-    "£1 MILLION",
-  ]);
   return (
     <div className="half scoreboard">
-      {scoreboard.map((prize, index) => {
+      {scoreboardData.map((prize, index) => {
         return (
           <div
             key={index}

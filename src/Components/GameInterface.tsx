@@ -3,20 +3,22 @@ import { FullQuestions } from "../Types/QuizTypes";
 import InfoPanel from "./InfoPanel";
 import QuestionsPanel from "./QuestionsPanel";
 import Scoreboard from "./Scoreboard";
+import MenuScreen from "./MenuScreen";
+import { scoreboardData } from "../Utils/Utils";
 
 type InterfaceProps = {
   data: FullQuestions[];
   setData: React.Dispatch<React.SetStateAction<FullQuestions[]>>;
-  setIsGameLost: React.Dispatch<React.SetStateAction<boolean>>;
-  isGameLost: boolean;
+  setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
+  isGameOver: boolean;
   apiCall: () => void;
 };
 
 const GameInterface: FC<InterfaceProps> = ({
   data,
   setData,
-  setIsGameLost,
-  isGameLost,
+  setIsGameOver,
+  isGameOver,
   apiCall,
 }) => {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
@@ -28,42 +30,45 @@ const GameInterface: FC<InterfaceProps> = ({
   useEffect(() => {
     setDisabledAnswers([]);
   }, [currentQuestion]);
+
   return (
     <>
-      {!isGameLost ? (
-        <div className="game-container">
-          <div className="game-wrapper">
-            <InfoPanel
-              setData={setData}
-              data={data}
-              currentQuestion={currentQuestion}
-              handleDisabledButtons={handleDisabledButtons}
-            />
-            <Scoreboard currentQuestion={currentQuestion} />
-            <QuestionsPanel
-              data={data}
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
-              disabledAnswers={disabledAnswers}
-              setIsGameLost={setIsGameLost}
-              isGameLost={isGameLost}
-            />
+      {!isGameOver ? (
+        <>
+          <div className="game-container">
+            <div className="game-wrapper">
+              <InfoPanel
+                setData={setData}
+                data={data}
+                currentQuestion={currentQuestion}
+                handleDisabledButtons={handleDisabledButtons}
+              />
+              <Scoreboard currentQuestion={currentQuestion} />
+              <QuestionsPanel
+                data={data}
+                currentQuestion={currentQuestion}
+                setCurrentQuestion={setCurrentQuestion}
+                disabledAnswers={disabledAnswers}
+                setIsGameOver={setIsGameOver}
+                isGameOver={isGameOver}
+              />
+            </div>
           </div>
-        </div>
+        </>
       ) : (
-        <div className="centered-container">
-          <div className="centered-wrapper">
-            <h1>You lost, congrats !!!!</h1>
-            <button
-              onClick={() => {
-                setIsGameLost(false);
-                apiCall();
-              }}
-            >
-              Play Again
-            </button>
-          </div>
-        </div>
+        <MenuScreen
+          title={currentQuestion < 14 ? "You just lost" : "you won"}
+          currentQuestion={currentQuestion}
+        >
+          <button
+            onClick={() => {
+              setIsGameOver(false);
+              apiCall();
+            }}
+          >
+            Play Again
+          </button>
+        </MenuScreen>
       )}
     </>
   );

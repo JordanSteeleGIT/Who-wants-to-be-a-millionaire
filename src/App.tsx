@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Question, FullQuestions } from "./Types/QuizTypes";
 import { shuffleArray } from "./Utils/Utils";
 import axios, { AxiosResponse } from "axios";
+import MenuScreen from "./Components/MenuScreen";
 
 import GameInterface from "./Components/GameInterface";
 import "./App.css";
@@ -10,8 +11,7 @@ const App = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
 
-  //If the game is lost we need to show a scren with "play again" and reset all state to initialstate
-  const [isGameLost, setIsGameLost] = useState<boolean>(false);
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
   const apiCall = () => {
     setLoading(true);
@@ -51,10 +51,10 @@ const App = () => {
   };
 
   useEffect(() => {
-    if (isGameLost) {
+    if (isGameOver) {
       setData([]);
     }
-  }, [isGameLost]);
+  }, [isGameOver]);
 
   return (
     <section>
@@ -62,29 +62,23 @@ const App = () => {
         <GameInterface
           data={data}
           setData={setData}
-          setIsGameLost={setIsGameLost}
-          isGameLost={isGameLost}
+          setIsGameOver={setIsGameOver}
+          isGameOver={isGameOver}
           apiCall={apiCall}
         />
       ) : (
-        <div className="centered-container">
-          <div className="centered-wrapper">
-            {loading && <h1>Game Starting</h1>}
-            {!gameStarted && (
-              <>
-                <h1>Play</h1>
-                <button
-                  onClick={() => {
-                    setGameStarted(true);
-                    apiCall();
-                  }}
-                >
-                  Start Game
-                </button>
-              </>
-            )}
-          </div>
-        </div>
+        <MenuScreen title={!loading ? "Play" : "Game Starting"}>
+          {!loading && (
+            <button
+              onClick={() => {
+                setGameStarted(true);
+                apiCall();
+              }}
+            >
+              Start Game
+            </button>
+          )}
+        </MenuScreen>
       )}
     </section>
   );

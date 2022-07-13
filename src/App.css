@@ -248,13 +248,17 @@ section {
 }
 
 .centered-wrapper {
-  width: 50%;
-  height: 350px;
+  width: 55%;
+  height: 450px;
   background: rgb(7, 46, 120);
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-direction: column;
+  padding: 30px;
+}
+.centered-wrapper img {
+  max-width: 60%;
+  margin-bottom: 30px;
 }
 
 .centered-wrapper button {
