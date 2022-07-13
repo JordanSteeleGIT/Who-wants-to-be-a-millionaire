@@ -98,7 +98,7 @@ const QuestionsPanel: FC<QuestionsPanelProps> = ({
                   } else {
                     setIsGameOver(true);
                   }
-                }, 400);
+                }, 3400);
               } else {
                 setTimeout(() => {
                   setIsGameOver(true);
