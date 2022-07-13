@@ -35,7 +35,6 @@ const GameInterface: FC<InterfaceProps> = ({
     <>
       {!isGameOver ? (
         <>
-          <h1>{data[currentQuestion].correct_answer}</h1>
           <div className="game-container">
             <div className="game-wrapper">
               <InfoPanel
