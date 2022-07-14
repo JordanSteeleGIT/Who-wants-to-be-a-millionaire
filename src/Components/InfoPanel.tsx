@@ -155,11 +155,11 @@ const InfoPanel: FC<InfoPanelProps> = ({
     }
   };
 
-  function randomIntExcludingArray(
+  const randomIntExcludingArray = (
     min: number,
     max: number,
     exclude: number[]
-  ): number {
+  ): number => {
     const nums = [];
     for (let i = min; i <= max; i++) {
       if (!exclude.includes(i)) nums.push(i);
@@ -167,7 +167,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
 
     const randomIndex = Math.floor(Math.random() * nums.length);
     return nums[randomIndex];
-  }
+  };
 
   const handleAudienceWrongAnswersCount = (numberOfCorrectAnswers: number) => {
     let indexOfCorrectAnswer = data[currentQuestion].all_answers.indexOf(
@@ -200,9 +200,9 @@ const InfoPanel: FC<InfoPanelProps> = ({
     setAskAudienceData(tempAudienceAnswers);
   };
 
-  function randomInteger(min: number, max: number) {
+  const randomInteger = (min: number, max: number):number => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+  };
 
   const handleAskAudience = (randomNumber: number, threshold: number) => {
     setHasAskAudienceLifeline(false);
