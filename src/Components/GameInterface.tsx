@@ -4,7 +4,6 @@ import InfoPanel from "./InfoPanel";
 import QuestionsPanel from "./QuestionsPanel";
 import Scoreboard from "./Scoreboard";
 import MenuScreen from "./MenuScreen";
-import { scoreboardData } from "../Utils/Utils";
 
 type InterfaceProps = {
   data: FullQuestions[];

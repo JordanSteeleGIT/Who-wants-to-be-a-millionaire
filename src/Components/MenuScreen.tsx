@@ -1,5 +1,6 @@
 import React, { FC } from "react";
 import { scoreboardData } from "../Utils/Utils";
+import logo from "../logo.png";
 
 type MenuScreenProps = {
   children: React.ReactNode;
@@ -15,7 +16,7 @@ const MenuScreen: FC<MenuScreenProps> = ({
   return (
     <div className="centered-container">
       <div className="centered-wrapper">
-        <img src="./images/whowants.png" />
+        <img src={logo} />
         <h1>{title}</h1>
         {currentQuestion != null && <h2>{scoreboardData[currentQuestion]}</h2>}
 
