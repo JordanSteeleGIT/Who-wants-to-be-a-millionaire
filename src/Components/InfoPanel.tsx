@@ -132,11 +132,22 @@ const InfoPanel: FC<InfoPanelProps> = ({
     if (randomNumber < threshold) {
       setAskHostData(data[currentQuestion].correct_answer);
     } else {
-      setAskHostData(
-        data[currentQuestion].all_answers[
-          randomExcluded(0, 3, indexOfCorrectAnswer)
-        ]
-      );
+      if (!fiftyFiftyData.isActive) {
+        setAskHostData(
+          data[currentQuestion].all_answers[
+            randomExcluded(0, 3, indexOfCorrectAnswer)
+          ]
+        );
+      } else {
+        //50/50 active
+        let invalidAnswers =
+          fiftyFiftyData.removedAnswers.concat(indexOfCorrectAnswer);
+        setAskHostData(
+          data[currentQuestion].all_answers[
+            randomIntExcludingArray(0, 3, invalidAnswers)
+          ]
+        );
+      }
     }
   };
 
@@ -200,7 +211,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
     setAskAudienceData(tempAudienceAnswers);
   };
 
-  const randomInteger = (min: number, max: number):number => {
+  const randomInteger = (min: number, max: number): number => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
