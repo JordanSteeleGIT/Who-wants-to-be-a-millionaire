@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from "react";
 
 import { FullQuestions } from "../Types/QuizTypes";
 import { shuffleArray, randombetween } from "../Utils/Utils";
-import logo from "../logo.png";
+
 type InfoPanelProps = {
   setData: React.Dispatch<React.SetStateAction<FullQuestions[]>>;
   currentQuestion: number;
@@ -13,10 +13,6 @@ type InfoPanelProps = {
 type AskAudienceType = {
   [key: string]: number;
 };
-type FiftyFiftyData = {
-  isActive: boolean;
-  removedAnswers: number[];
-};
 
 const InfoPanel: FC<InfoPanelProps> = ({
   setData,
@@ -26,11 +22,6 @@ const InfoPanel: FC<InfoPanelProps> = ({
 }) => {
   const [hasFiftyfiftyLifeline, setHasFiftyfiftyLifeline] =
     useState<boolean>(true);
-
-  const [fiftyFiftyData, setFiftyFiftyData] = useState<FiftyFiftyData>({
-    isActive: false,
-    removedAnswers: [],
-  });
   const [hasAskAudienceLifeline, setHasAskAudienceLifeline] =
     useState<boolean>(true);
   const [hasAskHostLifeline, setHasAskHostLifeline] = useState<boolean>(true);
@@ -50,11 +41,6 @@ const InfoPanel: FC<InfoPanelProps> = ({
   useEffect(() => {
     setDisplayAudienceGraph(false);
     setDisplayHostAnswer(false);
-
-    setFiftyFiftyData({
-      isActive: false,
-      removedAnswers: [],
-    });
   }, [currentQuestion]);
 
   const removeTwoAnswers = (
@@ -64,11 +50,6 @@ const InfoPanel: FC<InfoPanelProps> = ({
     let index = fullArray.indexOf(correctAnswer);
     let numbers = generateRandom(index);
     handleDisabledButtons(numbers);
-    setFiftyFiftyData({
-      isActive: true,
-      removedAnswers: numbers,
-    });
-
     for (let i = 0; i < 2; i++) {
       fullArray[numbers[i]] = " ";
     }
@@ -95,15 +76,30 @@ const InfoPanel: FC<InfoPanelProps> = ({
       return obj;
     });
     setHasFiftyfiftyLifeline(false);
-
     setData(newState);
   };
+
+  const handleAskAudienceDifficulty = () => {
+    //Switch statement for each question difficulty
+    let randomNumber = randombetween(0, 1);
+    switch (data[currentQuestion].difficulty) {
+      case "easy":
+        return handleAskAudience(randomNumber, 0.95);
+      case "medium":
+        return handleAskAudience(randomNumber, 0.85);
+      case "hard":
+        return handleAskAudience(randomNumber, 0.7);
+      default:
+        return handleAskAudience(randomNumber, 0.85);
+    }
+  };
+
   const handleAskHostDifficulty = () => {
     //Switch statement for each question difficulty
     let randomNumber = randombetween(0, 1);
     switch (data[currentQuestion].difficulty) {
       case "easy":
-        return handleAskHost(randomNumber, 0.95);
+        return handleAskHost(randomNumber, 0.85);
       case "medium":
         return handleAskHost(randomNumber, 0.75);
       case "hard":
@@ -132,66 +128,21 @@ const InfoPanel: FC<InfoPanelProps> = ({
     if (randomNumber < threshold) {
       setAskHostData(data[currentQuestion].correct_answer);
     } else {
-      if (!fiftyFiftyData.isActive) {
-        setAskHostData(
-          data[currentQuestion].all_answers[
-            randomExcluded(0, 3, indexOfCorrectAnswer)
-          ]
-        );
-      } else {
-        //50/50 active
-        let invalidAnswers =
-          fiftyFiftyData.removedAnswers.concat(indexOfCorrectAnswer);
-        setAskHostData(
-          data[currentQuestion].all_answers[
-            randomIntExcludingArray(0, 3, invalidAnswers)
-          ]
-        );
-      }
+      setAskHostData(
+        data[currentQuestion].all_answers[
+          randomExcluded(0, 3, indexOfCorrectAnswer)
+        ]
+      );
     }
   };
 
-  const handleAskAudienceDifficulty = () => {
-    //Switch statement for each question difficulty
-    let randomNumber = randombetween(0, 1);
-    switch (data[currentQuestion].difficulty) {
-      case "easy":
-        return handleAskAudience(randomNumber, 0.91);
-      case "medium":
-        return handleAskAudience(randomNumber, 0.85);
-      case "hard":
-        return handleAskAudience(randomNumber, 0.7);
-      default:
-        return handleAskAudience(randomNumber, 0.85);
-    }
-  };
-
-  const randomIntExcludingArray = (
-    min: number,
-    max: number,
-    exclude: number[]
-  ): number => {
-    const nums = [];
-    for (let i = min; i <= max; i++) {
-      if (!exclude.includes(i)) nums.push(i);
-    }
-
-    const randomIndex = Math.floor(Math.random() * nums.length);
-    return nums[randomIndex];
-  };
-
-  const generateAllAnswersProb = (
-    noIncorrectProb: number,
-    correctAnswerProb: number,
-    indexOfCorrectAnswer: number
-  ) => {
+  const generateWrongAnswersProb = (max: number, thecount: number) => {
     //Function takes the remaining probability chance and and picks a number within a range for each individual answer
     var r = [];
-    let max = 1 - correctAnswerProb;
     let newMax = max;
     let stopMaxRoll = newMax * 0.15;
-    for (let i = 0; i < noIncorrectProb; i++) {
-      if (i === noIncorrectProb - 1) {
+    for (let i = 0; i < thecount; i++) {
+      if (i === thecount - 1) {
         r.push(parseFloat(newMax.toFixed(2)));
       } else {
         let randomNumber = randombetween(stopMaxRoll, newMax - stopMaxRoll);
@@ -199,18 +150,30 @@ const InfoPanel: FC<InfoPanelProps> = ({
         newMax = newMax - randomNumber;
       }
     }
-    return spliceProbArr(r, indexOfCorrectAnswer, correctAnswerProb);
+    return shuffleArray(r);
   };
 
-  const spliceProbArr = (
-    incorrectProbArr: number[],
-    indexOfCorrectAnswer: number,
-    correctAnswerProb: number
-  ) => {
-    incorrectProbArr.splice(indexOfCorrectAnswer, 0, correctAnswerProb);
-    return incorrectProbArr;
+  const generateAllAnswersProb = (correctAnswerProbability: number) => {
+    //Function returns an array with each answers weights to be chosen by the audience
+    let wrongAnswersProbArr = generateWrongAnswersProb(
+      1 - correctAnswerProbability,
+      3
+    );
+    let indexOfCorrectAnswer = data[currentQuestion].all_answers.indexOf(
+      data[currentQuestion].correct_answer
+    );
+    wrongAnswersProbArr.splice(
+      indexOfCorrectAnswer,
+      0,
+      correctAnswerProbability
+    );
+    return wrongAnswersProbArr;
   };
-  const biasedRandomSelection = (values: any, probabilities: number[]) => {
+
+  const biasedRandomSelection = (
+    values: string[],
+    probabilities: number[]
+  ): string | undefined => {
     //Functions the probablities to pick and answer
     var rand = Math.random();
     var cumulativeProb = 0;
@@ -219,69 +182,57 @@ const InfoPanel: FC<InfoPanelProps> = ({
       if (rand < cumulativeProb) return values[i];
     }
   };
-
-  const handleAudienceWrongAnswersCount = (numberOfCorrectAnswers: number) => {
-    let indexOfCorrectAnswer = data[currentQuestion].all_answers.indexOf(
-      data[currentQuestion].correct_answer
-    );
-    let tempAudienceAnswers: AskAudienceType = {
+  const calculateAudienceAnswers = (
+    allAnswersArray: any,
+    bias: number[],
+    amountOfResponses: number
+  ) => {
+    //Sums return value from biasRandomSelection
+    let newArr = ["A", "B", "C", "D"];
+    let audienceAnswers: AskAudienceType = {
       A: 0,
       B: 0,
       C: 0,
       D: 0,
     };
-    let lookUpArray = ["A", "B", "C", "D"];
-    if (!fiftyFiftyData.isActive) {
-      let probArrWithoutFiftyFifty = generateAllAnswersProb(
-        3,
-        numberOfCorrectAnswers,
-        indexOfCorrectAnswer
-      );
-      for (let i = 0; i < 30; i++) {
-        tempAudienceAnswers[
-          biasedRandomSelection(lookUpArray, probArrWithoutFiftyFifty)
-        ] += 1;
-      }
-    } else {
-      let availableAnswers = removeMultipleIndexes(
-        lookUpArray,
-        fiftyFiftyData.removedAnswers
-      );
-      let probArrWithFiftyFifty = generateAllAnswersProb(
-        1,
-        numberOfCorrectAnswers,
-        indexOfCorrectAnswer
-      );
-      for (let i = 0; i < 30; i++) {
-        tempAudienceAnswers[
-          biasedRandomSelection(availableAnswers, probArrWithFiftyFifty)
-        ] += 1;
-      }
+    for (let i = 0; i < amountOfResponses; i++) {
+      let answer = biasedRandomSelection(allAnswersArray, bias); // The result will an answer as a string
+      let indexOfAnswer = allAnswersArray.indexOf(answer); // Find the index of the chosen answer
+      audienceAnswers[newArr[indexOfAnswer]] =
+        audienceAnswers[newArr[indexOfAnswer]] + 1;
     }
-
-    setAskAudienceData(tempAudienceAnswers);
+    return audienceAnswers;
   };
 
-  const removeMultipleIndexes = (arr: string[], index: number[]) => {
-    for (var i = index.length - 1; i >= 0; i--) {
-      arr.splice(index[i], 1);
-    }
-    return arr;
-  };
-  const randomInteger = (min: number, max: number): number => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
   const handleAskAudience = (randomNumber: number, threshold: number) => {
     setHasAskAudienceLifeline(false);
     //Function indentifies if audience is going to be correct and what to do with the result
     if (randomNumber < threshold) {
-      let correctAnswers = randombetween(0.51, 0.87);
-      handleAudienceWrongAnswersCount(correctAnswers);
       //audience is correct
+      let correctAnswerProbability = randombetween(0.51, 0.9);
+      let audienceProbability = generateAllAnswersProb(
+        correctAnswerProbability
+      );
+      setAskAudienceData(
+        calculateAudienceAnswers(
+          data[currentQuestion].all_answers,
+          audienceProbability,
+          30
+        )
+      );
     } else {
       //audience is wrong
-      let correctAnswers = randomInteger(0.2, 0.4);
-      handleAudienceWrongAnswersCount(correctAnswers);
+      let correctAnswerProbability = randombetween(0.1, 0.4);
+      let audienceProbability = generateAllAnswersProb(
+        correctAnswerProbability
+      );
+      setAskAudienceData(
+        calculateAudienceAnswers(
+          data[currentQuestion].all_answers,
+          audienceProbability,
+          30
+        )
+      );
     }
   };
 
@@ -295,7 +246,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
 
   return (
     <div className="half info-panel">
-      <img src={logo} />
+      <img src="./images/whowants.png" />
       {displayAudienceGraph && (
         <div className="lifeline-container audience-container">
           {Object.keys(askAudienceData).map((keyName) => {

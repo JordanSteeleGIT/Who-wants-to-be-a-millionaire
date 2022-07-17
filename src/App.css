@@ -211,6 +211,27 @@ section {
   height: 120px;
 }
 
+.lifeline-container h1 {
+  color: white;
+}
+
+.askhost-container {
+  padding: 20px;
+  position: relative;
+}
+.askhost-container::before {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: 100%;
+  right: 1.5em;
+  border: 0.75rem solid transparent;
+  border-top: none;
+  border-bottom-color: rgba(10, 21, 74, 1);
+  filter: drop-shadow(0 -0.0625rem 0.0625rem rgba(0, 0, 0, 0.1));
+  transform: rotate(180deg);
+}
 .audience-container {
   display: flex;
   align-items: flex-end;
@@ -248,16 +269,21 @@ section {
 }
 
 .centered-wrapper {
-  width: 55%;
-  height: 450px;
+  width: 400px;
+  height: 550px;
   background: rgb(7, 46, 120);
   display: flex;
   align-items: center;
   flex-direction: column;
-  padding: 30px;
+  padding: 60px;
+}
+
+.centered-wrapper h1 {
+  color: white;
+  font-size: 30px;
 }
 .centered-wrapper img {
-  max-width: 60%;
+  max-width: 100%;
   margin-bottom: 30px;
 }
 
