@@ -1,7 +1,13 @@
 import React, { FC, useEffect, useState } from "react";
 
 import { FullQuestions } from "../Types/QuizTypes";
-import { shuffleArray, randombetween } from "../Utils/Utils";
+import {
+  randomFloatBetween,
+  randomIntExcludingArray,
+  generateRandomArray,
+  randomIntExcludingValue,
+  randomInteger,
+} from "../Utils/Utils";
 import logo from "../logo.png";
 type InfoPanelProps = {
   setData: React.Dispatch<React.SetStateAction<FullQuestions[]>>;
@@ -62,7 +68,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
     correctAnswer: string
   ): string[] => {
     let index = fullArray.indexOf(correctAnswer);
-    let numbers = generateRandom(index);
+    let numbers = generateRandomArray(index);
     handleDisabledButtons(numbers);
     setFiftyFiftyData({
       isActive: true,
@@ -73,15 +79,6 @@ const InfoPanel: FC<InfoPanelProps> = ({
       fullArray[numbers[i]] = " ";
     }
     return fullArray;
-  };
-
-  const generateRandom = (excluded: number): number[] => {
-    var arr = [];
-    while (arr.length < 2) {
-      var r = Math.floor(Math.random() * 4);
-      if (arr.indexOf(r) === -1 && r !== excluded) arr.push(r);
-    }
-    return arr;
   };
 
   const handleFiftyFifty = (): void => {
@@ -100,27 +97,21 @@ const InfoPanel: FC<InfoPanelProps> = ({
   };
   const handleAskHostDifficulty = () => {
     //Switch statement for each question difficulty
-    let randomNumber = randombetween(0, 1);
+    let randomNumber = randomFloatBetween(0, 1);
     switch (data[currentQuestion].difficulty) {
       case "easy":
-        return handleAskHost(randomNumber, 0.95);
+        handleAskHost(randomNumber, 0.95);
+        break;
       case "medium":
-        return handleAskHost(randomNumber, 0.75);
+        handleAskHost(randomNumber, 0.75);
+        break;
       case "hard":
-        return handleAskHost(randomNumber, 0.65);
+        handleAskHost(randomNumber, 0.65);
+        break;
       default:
-        return handleAskHost(randomNumber, 0.75);
+        handleAskHost(randomNumber, 0.75);
+        break;
     }
-  };
-
-  const randomExcluded = (
-    min: number,
-    max: number,
-    excluded: number
-  ): number => {
-    var n = Math.floor(Math.random() * (max - min) + min);
-    if (n >= excluded) n++;
-    return n;
   };
 
   const handleAskHost = (randomNumber: number, threshold: number): void => {
@@ -135,7 +126,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
       if (!fiftyFiftyData.isActive) {
         setAskHostData(
           data[currentQuestion].all_answers[
-            randomExcluded(0, 3, indexOfCorrectAnswer)
+            randomIntExcludingValue(0, 3, indexOfCorrectAnswer)
           ]
         );
       } else {
@@ -151,40 +142,44 @@ const InfoPanel: FC<InfoPanelProps> = ({
     }
   };
 
-  const handleAskAudienceDifficulty = () => {
+  const handleAskAudienceDifficulty = (): void => {
     //Switch statement for each question difficulty
-    let randomNumber = randombetween(0, 1);
+    let randomNumber = randomFloatBetween(0, 1);
     switch (data[currentQuestion].difficulty) {
       case "easy":
-        return handleAskAudience(randomNumber, 0.91);
+        handleAskAudience(randomNumber, 0.91);
+        break;
       case "medium":
-        return handleAskAudience(randomNumber, 0.85);
+        handleAskAudience(randomNumber, 0.85);
+        break;
       case "hard":
-        return handleAskAudience(randomNumber, 0.7);
+        handleAskAudience(randomNumber, 0.7);
+        break;
       default:
-        return handleAskAudience(randomNumber, 0.85);
+        handleAskAudience(randomNumber, 0.85);
+        break;
     }
   };
 
-  const randomIntExcludingArray = (
-    min: number,
-    max: number,
-    exclude: number[]
-  ): number => {
-    const nums = [];
-    for (let i = min; i <= max; i++) {
-      if (!exclude.includes(i)) nums.push(i);
+  const handleAskAudience = (randomNumber: number, threshold: number): void => {
+    setHasAskAudienceLifeline(false);
+    //Function indentifies if audience is going to be correct and what to do with the result
+    if (randomNumber < threshold) {
+      let correctAnswers = randomFloatBetween(0.51, 0.87);
+      handleAudienceWrongAnswersCount(correctAnswers);
+      //audience is correct
+    } else {
+      //audience is wrong
+      let correctAnswers = randomInteger(0.2, 0.4);
+      handleAudienceWrongAnswersCount(correctAnswers);
     }
-
-    const randomIndex = Math.floor(Math.random() * nums.length);
-    return nums[randomIndex];
   };
 
   const generateAllAnswersProb = (
     noIncorrectProb: number,
     correctAnswerProb: number,
     indexOfCorrectAnswer: number
-  ) => {
+  ): number[] => {
     //Function takes the remaining probability chance and and picks a number within a range for each individual answer
     var r = [];
     let max = 1 - correctAnswerProb;
@@ -194,23 +189,30 @@ const InfoPanel: FC<InfoPanelProps> = ({
       if (i === noIncorrectProb - 1) {
         r.push(parseFloat(newMax.toFixed(2)));
       } else {
-        let randomNumber = randombetween(stopMaxRoll, newMax - stopMaxRoll);
+        let randomNumber = randomFloatBetween(
+          stopMaxRoll,
+          newMax - stopMaxRoll
+        );
         r.push(randomNumber);
         newMax = newMax - randomNumber;
       }
     }
-    return spliceProbArr(r, indexOfCorrectAnswer, correctAnswerProb);
+    return spliceProbArray(r, indexOfCorrectAnswer, correctAnswerProb);
   };
 
-  const spliceProbArr = (
+  const spliceProbArray = (
     incorrectProbArr: number[],
     indexOfCorrectAnswer: number,
     correctAnswerProb: number
-  ) => {
+  ): number[] => {
     incorrectProbArr.splice(indexOfCorrectAnswer, 0, correctAnswerProb);
     return incorrectProbArr;
   };
-  const biasedRandomSelection = (values: any, probabilities: number[]) => {
+
+  const biasedRandomSelection = <T,>(
+    values: T[],
+    probabilities: number[]
+  ): any => {
     //Functions the probablities to pick and answer
     var rand = Math.random();
     var cumulativeProb = 0;
@@ -220,7 +222,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
     }
   };
 
-  const handleAudienceWrongAnswersCount = (numberOfCorrectAnswers: number) => {
+  const handleAudienceWrongAnswersCount = (correctAnswerProb: number): void => {
     let indexOfCorrectAnswer = data[currentQuestion].all_answers.indexOf(
       data[currentQuestion].correct_answer
     );
@@ -234,7 +236,7 @@ const InfoPanel: FC<InfoPanelProps> = ({
     if (!fiftyFiftyData.isActive) {
       let probArrWithoutFiftyFifty = generateAllAnswersProb(
         3,
-        numberOfCorrectAnswers,
+        correctAnswerProb,
         indexOfCorrectAnswer
       );
       for (let i = 0; i < 30; i++) {
@@ -243,49 +245,40 @@ const InfoPanel: FC<InfoPanelProps> = ({
         ] += 1;
       }
     } else {
+      //Array with only answers that I want to generate probabilities for (correct answer and one other answer)
       let availableAnswers = removeMultipleIndexes(
         lookUpArray,
         fiftyFiftyData.removedAnswers
       );
+      //since 50/50 is active the audience should have a higher chance of being correct
+      let increasedCorrectAnswerProb =
+        correctAnswerProb + 0.15 <= 1
+          ? correctAnswerProb + 0.15
+          : correctAnswerProb;
+
       let probArrWithFiftyFifty = generateAllAnswersProb(
         1,
-        numberOfCorrectAnswers,
+        increasedCorrectAnswerProb,
         indexOfCorrectAnswer
       );
+
       for (let i = 0; i < 30; i++) {
         tempAudienceAnswers[
           biasedRandomSelection(availableAnswers, probArrWithFiftyFifty)
         ] += 1;
       }
     }
-
     setAskAudienceData(tempAudienceAnswers);
   };
 
-  const removeMultipleIndexes = (arr: string[], index: number[]) => {
+  const removeMultipleIndexes = <T,>(arr: T[], index: number[]): T[] => {
     for (var i = index.length - 1; i >= 0; i--) {
       arr.splice(index[i], 1);
     }
     return arr;
   };
-  const randomInteger = (min: number, max: number): number => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-  const handleAskAudience = (randomNumber: number, threshold: number) => {
-    setHasAskAudienceLifeline(false);
-    //Function indentifies if audience is going to be correct and what to do with the result
-    if (randomNumber < threshold) {
-      let correctAnswers = randombetween(0.51, 0.87);
-      handleAudienceWrongAnswersCount(correctAnswers);
-      //audience is correct
-    } else {
-      //audience is wrong
-      let correctAnswers = randomInteger(0.2, 0.4);
-      handleAudienceWrongAnswersCount(correctAnswers);
-    }
-  };
 
-  const handleButtonClass = (lifeLineState: boolean) => {
+  const handleButtonClass = (lifeLineState: boolean): string | undefined => {
     if (!lifeLineState) {
       return "cross";
     } else {
